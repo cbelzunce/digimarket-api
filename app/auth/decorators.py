@@ -1,15 +1,24 @@
 from functools import wraps
-from flask import request
+from flask import request, jsonify, g
+from .security import decode_token
 
-def require_authentication(f):
-    @wraps(f)
+
+def require_authentication(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
-        from ..auth.security import decode_token
+        auth = request.headers.get("Authorization", "")
 
-        token = request.headers.get("Authorization", "")
+        if not auth.startswith("Bearer "):
+            return jsonify({"message": "Authorization header manquant ou invalide"}), 401
 
-        if not token or not decode_token(token):
-            return {"error": "Jeton d'accès invalide."}, 401
-        
-        return f(*args, **kwargs)
+        token = auth.split(" ", 1)[1].strip()
+
+        try:
+            payload = decode_token(token)
+        except Exception as e:
+            return jsonify({"message": "Token invalide"}), 401
+
+        # On stocke l'identité pour la suite du traitement
+        g.user = payload        
+        return func(*args, **kwargs)
     return wrapper
