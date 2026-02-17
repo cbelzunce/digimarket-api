@@ -1,35 +1,35 @@
-from flask import Flask, request, jsonify
-from app.auth.decorators import require_authentication
-from app.auth.security import generate_token
-from app.auth.users_store import get_user_by_username, verify_password
-
-app = Flask(__name__)
+from http.client import HTTPException
+from flask import Flask, jsonify
+from app.extensions import db
 
 
-@app.route('/auth/login', methods=["POST"])
-def login():
-    data = request.get_json(silent=True) or {}
-    username = data.get("username")
-    password = data.get("password")
+def create_app():
+    app = Flask(__name__)
 
-    if not username or not password:
-        return jsonify({"message": "Nom et mot de passe requis"}), 400
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+    db.init_app(app)
 
-    user = get_user_by_username(username)
+     # IMPORTER LES MODÈLES ICI (important)
+    from app.auth.models import User
 
-    if not user or not verify_password(user, password):
-            return jsonify({"message": "Identifiants invalides"}), 401
-    
-    token = generate_token(
-         user_id=user["id"],
-         username=user["username"],
-         roles=user["roles"]
-    )
+    # Créer les tables en dev
+    with app.app_context():
+        db.create_all()
 
-    return jsonify({"access_token": token, "token_type": "Bearer"}), 200
+    from app.auth.routes import auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
+    # Par sécurité    
+    '''
+    @app.errorhandler(Exception)
+    def handle_unexpected_error(e):
+        return jsonify({"message": "Internal server error"}), 500
+    '''
+    return app
 
+    '''
 @app.route('/predict', methods=["GET"])
 @require_authentication
 def predict():
     return {"message": "Ok !"}, 200
+    '''
