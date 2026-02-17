@@ -13,6 +13,7 @@ def create_app():
 
      # Importer les  modèles ORM
     from app.auth.models import User
+    from app.products.models import Product
 
     # Créer les tables
     with app.app_context():
@@ -20,6 +21,9 @@ def create_app():
 
     from app.auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    from app.products.routes import products_bp
+    app.register_blueprint(products_bp, url_prefix="/api/produits")
 
     # Créer user admin si nécessaire
     register_cli(app)

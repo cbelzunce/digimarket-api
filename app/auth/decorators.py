@@ -22,3 +22,31 @@ def require_authentication(func):
         g.user = payload        
         return func(*args, **kwargs)
     return wrapper
+
+
+def require_role(required_role: str):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            if not hasattr(g, "user"):
+                return jsonify({"message": "Authentification requise."}), 401
+
+            user_payload = g.user
+
+            # Cas 1 : token contient une liste "roles"
+            roles = user_payload.get("roles")
+
+            # Cas 2 : token contient un seul "role"
+            if roles is None:
+                role = user_payload.get("role")
+                roles = [role] if role else []
+
+            if required_role not in roles:
+                return jsonify({"message": "Accès interdit."}), 403
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
