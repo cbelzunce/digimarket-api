@@ -15,6 +15,7 @@ __pycache__/
 .vscode/
 
 # SQLite
+instance/
 *.db
 
 # OS

@@ -1,6 +1,8 @@
 from http.client import HTTPException
 from flask import Flask, jsonify
 from app.extensions import db
+from app.cli import register_cli
+
 
 
 def create_app():
@@ -9,15 +11,18 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
     db.init_app(app)
 
-     # IMPORTER LES MODÈLES ICI (important)
+     # Importer les  modèles ORM
     from app.auth.models import User
 
-    # Créer les tables en dev
+    # Créer les tables
     with app.app_context():
         db.create_all()
 
     from app.auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    # Créer user admin si nécessaire
+    register_cli(app)
 
     # Par sécurité
     '''

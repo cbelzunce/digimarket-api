@@ -18,13 +18,10 @@ def register():
     errors = validate_register(data)
     if errors:
         return jsonify({"errors": errors}), 400
-    print(1)
-    email = data["email"].strip().lower()
-    print(2)
 
      # Création de l'utilisateur
     user = User(
-        email=email,
+        email=data["email"].strip().lower(),
         password_hash=generate_password_hash(data["password"]),
         first_name=data["first_name"].strip(),
         last_name=data["last_name"].strip(),
@@ -38,7 +35,7 @@ def register():
     except IntegrityError:
         db.session.rollback()
         return jsonify({"message": "L'email existe déjà"}), 409
-    print(5)
+
     # et return ses infos sauf pass
     return jsonify({
         "id": user.id,
