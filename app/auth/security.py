@@ -7,12 +7,12 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRES_MINUTES = int(os.environ.get("JWT_EXPIRES_MINUTES", "15"))
 
 
-def generate_token(user_id: int, username: str, roles: list[str]):
+def generate_token(user_id: int, email: str, roles: list[str]):
     now = datetime.now(timezone.utc)
 
     payload = {
         "sub": str(user_id),
-        "username": username,
+        "user": email,
         "roles": roles,
         "iat": int(now.timestamp()),
         "exp": int((now + timedelta(minutes=JWT_EXPIRES_MINUTES)).timestamp()),

@@ -3,26 +3,25 @@ from flask import Blueprint, jsonify, request
 
 from app.auth.models import User
 from app.auth.security import generate_token
-from app.auth.users_store import get_user_by_username, verify_password
+from app.auth.services import authenticate_user
+from app.auth.validators import validate_connexion, validate_register
 from app.extensions import db
 from werkzeug.security import generate_password_hash
 
 auth_bp = Blueprint("auth", __name__)
 
-
 @auth_bp.post("/register")
 def register():
     data = request.get_json(silent=True) or {}
-    
-    '''
+        
     # Validation des champs
     errors = validate_register(data)
     if errors:
         return jsonify({"errors": errors}), 400
-    '''
-
+    print(1)
     email = data["email"].strip().lower()
-    
+    print(2)
+
      # Création de l'utilisateur
     user = User(
         email=email,
@@ -39,7 +38,7 @@ def register():
     except IntegrityError:
         db.session.rollback()
         return jsonify({"message": "L'email existe déjà"}), 409
-    
+    print(5)
     # et return ses infos sauf pass
     return jsonify({
         "id": user.id,
@@ -52,22 +51,25 @@ def register():
 
 @auth_bp.post("/login")
 def login():
+
     data = request.get_json(silent=True) or {}
-    username = data.get("username")
+    email = data.get("email")
     password = data.get("password")
 
-    if not username or not password: # Sortir les checks 
-        return jsonify({"message": "Nom et mot de passe requis"}), 400
+    # Validation des champs
+    errors = validate_connexion(data)
 
-    user = get_user_by_username(username)
+    if errors:
+        return jsonify({"errors": errors}), 400  
 
-    if not user or not verify_password(user, password):
-            return jsonify({"message": "Identifiants invalides"}), 401
+    user = authenticate_user(email, password)
+    if not user:
+        return jsonify({"message": "Identifiants invalides"}), 401  
     
     token = generate_token(
-         user_id=user["id"],
-         username=user["username"],
-         roles=user["roles"]
+         user_id=user.id,
+         email=user.email,
+         roles=user.role
     )
 
     return jsonify({"access_token": token, "token_type": "Bearer"}), 200
