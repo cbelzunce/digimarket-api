@@ -9,7 +9,8 @@ from app.products.validators import validate_product_creation, validate_product_
 
 products_bp = Blueprint("products", __name__)
 
-# GET /api/produits?q=...&category=...
+
+# GET /api/produits?q=...&category=... (public)
 @products_bp.get("")
 def list_products():
     q = (request.args.get("q") or "").strip()
@@ -34,7 +35,7 @@ def list_products():
     return jsonify([p.to_dict() for p in products]), 200
 
 
-# GET /api/produits/<id>
+# GET /api/produits/<id> (public)
 @products_bp.get("/<int:product_id>")
 def get_product(product_id: int):
     product = db.session.get(Product, product_id)
@@ -56,14 +57,27 @@ def create_product():
 
     product = Product(
         name=data["name"].strip(),
+        ean=data["ean"].strip(),
+        brand=data["brand"].strip(),
         description=data["description"].strip(),
         category=data["category"].strip(),
         price=float(data["price"]),
         stock=int(data["stock"]),
     )
 
-    db.session.add(product)
-    db.session.commit()
+    try:
+        db.session.add(product)             
+        db.session.commit()
+
+    except IntegrityError as e:
+        db.session.rollback()
+        
+        return jsonify({
+            "errors": {
+                "ean": "Un produit avec ce code EAN existe déjà."
+            }
+            
+        }), 409
 
     return jsonify(product.to_dict()), 201
 
@@ -84,6 +98,8 @@ def update_product(product_id: int):
         return jsonify({"errors": errors}), 400
 
     product.name = data["name"].strip()
+    product.brand = data["brand"].strip()
+    product.ean = data["ean"].strip()
     product.description = data["description"].strip()
     product.category = data["category"].strip()
     product.price = float(data["price"])

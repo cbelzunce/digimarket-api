@@ -19,6 +19,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    # Blueprints
     from app.auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
