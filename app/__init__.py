@@ -4,7 +4,6 @@ from app.extensions import db
 from app.cli import register_cli
 
 
-
 def create_app():
     app = Flask(__name__)
 
