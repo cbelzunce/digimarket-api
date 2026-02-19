@@ -14,6 +14,7 @@ def create_app():
      # Importer les  modèles ORM
     from app.auth.models import User
     from app.products.models import Product
+    from app.orders.models import Order, OrderLine
 
     # Créer les tables
     with app.app_context():
@@ -26,20 +27,16 @@ def create_app():
     from app.products.routes import products_bp
     app.register_blueprint(products_bp, url_prefix="/api/produits")
 
+    from app.orders.routes import orders_bp
+    app.register_blueprint(orders_bp, url_prefix="/api/commandes")
+
     # Créer user admin si nécessaire
     register_cli(app)
 
-    # Par sécurité
     '''
+    # Par sécurité
     @app.errorhandler(Exception)
     def handle_unexpected_error(e):
         return jsonify({"message": "Internal server error"}), 500
     '''
     return app
-
-    '''
-@app.route('/predict', methods=["GET"])
-@require_authentication
-def predict():
-    return {"message": "Ok !"}, 200
-    '''
