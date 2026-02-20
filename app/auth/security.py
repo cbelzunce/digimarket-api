@@ -1,25 +1,26 @@
 import jwt
-import os
+from flask import current_app
 from datetime import datetime, timedelta, timezone
 
-JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRES_MINUTES = int(os.environ.get("JWT_EXPIRES_MINUTES", "15"))
-
 
 def generate_token(user_id: int, email: str, roles: list[str]):
     now = datetime.now(timezone.utc)
+
+    secret = current_app.config["JWT_SECRET"]
+    expires_minutes = int(current_app.config.get("JWT_EXPIRES_MINUTES", 60))
 
     payload = {
         "sub": str(user_id),
         "user": email,
         "roles": roles,
         "iat": int(now.timestamp()),
-        "exp": int((now + timedelta(minutes=JWT_EXPIRES_MINUTES)).timestamp()),
+        "exp": int((now + timedelta(minutes=expires_minutes)).timestamp()),
     }
 
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
+    return jwt.encode(payload, secret, algorithm=JWT_ALGORITHM)
 
 def decode_token(token: str):
-    return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    secret = current_app.config["JWT_SECRET"]
+
+    return jwt.decode(token, secret, algorithms=[JWT_ALGORITHM])
