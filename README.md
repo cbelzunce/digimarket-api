@@ -3,6 +3,8 @@
 Backend e-commerce développé en **Flask** avec authentification **JWT**,
 gestion des rôles (RBAC) et traitement transactionnel des commandes.
 
+Projet déployé en prod : https://cbelzunce.pythonanywhere.com/
+
 ------------------------------------------------------------------------
 
 ## 🧱 Stack technique
