@@ -115,6 +115,42 @@ flask create-admin
 
 ------------------------------------------------------------------------
 
+## 🧪 Données de démonstration
+
+Le projet inclut un script de seed permettant de générer des données
+réalistes (utilisateurs, produits et commandes).
+
+``` bash
+source .venv/bin/activate
+python seed.py
+```
+
+### 👤 Comptes de démonstration
+
+  Rôle     Email                   Mot de passe
+  -------- ----------------------- --------------
+  Admin    admin@digimarket.test   Admin123!
+  Client   alice@digimarket.test   Client123!
+  Client   bob@digimarket.test     Client123!
+  Client   chris@digimarket.test   Client123!
+
+### 📦 Données générées
+
+-   10 produits informatiques (clavier, souris, laptop, écran, SSD,
+    etc.)
+-   Plusieurs commandes avec différents statuts :
+    -   en_attente
+    -   validee
+    -   expediee
+-   Mise à jour automatique du stock pour les commandes validées /
+    expédiées
+
+⚠️ Ces identifiants sont fournis uniquement pour démonstration et
+doivent être modifiés en environnement de production.
+
+------------------------------------------------------------------------
+
+
 ## 🧪 Tests
 
 Tests unitaires et fonctionnels via Pytest.
