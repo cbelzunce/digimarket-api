@@ -36,6 +36,14 @@ API disponible sur :
 http://localhost:5000
 
 
+## 🔧 Configuration
+
+Copiez et éditez le fichier d’exemple :
+
+```bash
+cp .env.example .env
+```
+
 ## 🔑 Création d’un utilisateur administrateur
 
 Après installation des dépendances :
