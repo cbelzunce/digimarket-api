@@ -127,12 +127,12 @@ python seed.py
 
 ### 👤 Comptes de démonstration
 
-  Rôle     Email                   Mot de passe
-  -------- ----------------------- --------------
-  Admin    admin@digimarket.test   Admin123!
-  Client   alice@digimarket.test   Client123!
-  Client   bob@digimarket.test     Client123!
-  Client   chris@digimarket.test   Client123!
+|Rôle   |Email  |Mot de passe |
+|---    |:-:    |:-:          |
+|Admin  | admin@digimarket.test | Admin123! |
+|Client | alice@digimarket.test | Client123!|
+|Client | bob@digimarket.test   | Client123!|
+|Client | chris@digimarket.test | Client123!|
 
 ### 📦 Données générées
 
